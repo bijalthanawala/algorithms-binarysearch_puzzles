@@ -4,6 +4,9 @@ from random import randint, shuffle
 import math 
 import unittest
 
+from array_puzzles import arrayPuzzles
+
+
 class binSearchPuzzles:
 
     def __init__(self, init_arr):
@@ -105,6 +108,15 @@ class TestBinSearchPuzzles(unittest.TestCase):
             else:
                 #Confirm if we claim x to be not a perfect square, that that is so.
                 self.assertFalse(math.ceil(math.sqrt(x)) == math.sqrt(x))
+    
+    def test_array_reverse(self):
+        l = range(21) 
+        shuffle(l)
+        l_native_reversed = l[:]
+        arrayPuzzles.array_reverse(l)
+        l_native_reversed.reverse()
+        self.assertTrue(l_native_reversed == l)
+        
 
          
 if __name__ == "__main__":

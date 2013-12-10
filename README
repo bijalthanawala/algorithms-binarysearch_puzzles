@@ -3,3 +3,12 @@ The idea is put together a growing collection of interesting problems/puzzles
 solved by binary search (or like) technique
 
 New ideas, improvements welcome.
+
+
+Currently implemented binary-search based algorithms
+- binary search (itelf)
+- Find square root
+
+
+Other helper algorithms
+- Rotate an arrary/list (without using extra space)
