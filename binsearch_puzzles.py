@@ -1,54 +1,66 @@
 #! /usr/bin/python
 
-from random import randint
-from random import shuffle
+from random import randint, shuffle
+import unittest
 
-class array_puzzles:
-    arr = []
+class binSearchPuzzles:
 
     def __init__(self, init_arr):
-        self.arr = init_arr[:]
-        #print self.arr
+        pass
 
-    def printarr(self):
-        print self.arr
-
-    def binsearch(self, x):
+    def binsearch(self, arr, x):
         start = 0
-        end = len(self.arr)-1
+        end = len(arr)-1
         
-        #print "Looking for ", x
         while start <= end:
             mid = (start + end) / 2
-            if self.arr[mid] == x:
+            if arr[mid] == x:
                 return mid
-            if x > self.arr[mid]:
+            if x > arr[mid]:
                 start = mid + 1
             else: 
                 end = mid - 1
 
         return -1
         
-    
+class TestBinSearchPuzzles(unittest.TestCase):
 
-if __name__ == "__main__":
-    s = set()
-    while len(s) < 5000:
-        s.add(randint(0,10000))
-    l = list(s)
-    l.sort()
-    ap = array_puzzles(l)
-    lshuff = l[:]
-    shuffle(lshuff)
-    #print lshuff
-    for x in lshuff:
-        srchndx = ap.binsearch(x+5000)
-        listndx = l.index(x)
-        print x, " found at ", srchndx, ". Actual index = ", l.index(x)
-        if srchndx != listndx:
-            print x, " found at ", srchndx, ". Actual index = ", l.index(x)
-            break
-    else:
-        print "Pass"
+    def setUp(self):    
+        self.l = self.genRandomList(arrlen=5000, minval=0, maxval=10000, bUnique=True, bSorted=True)
+        self.bsp = binSearchPuzzles(self.l)
+        
+    def genRandomList(self, arrlen=10, minval=0, maxval=10, bUnique=True, bSorted=False):
+            if bUnique: 
+                #If a list with unique is desired, use intermediate set() 
+                s = set()
+                # Avoid running into an infinite loop, if the range (maxval-minval) 
+                # is not big enough to provide desired number of unique elements
+                if (maxval - minval + 1) < arrlen:
+                    return None
+                # Now generate random numbers
+                while len(s) < arrlen:
+                    s.add(randint(minval, maxval))
+                l = list(s)
+            else:
+                l = []
+                #Uniqueness is not a criteria
+                while len(l) < size:
+                    l.append(randint(minval, maxval))
+            #If sorted list is requested, comply
+            if bSorted:
+                l.sort()
+            return l 
+
+    def test_binarysearch(self):
+        #Generate a shuffled list of all elements in the list to be searched
+        #We want to search each element in a not orderly fashion
+        lshuff = self.l[:]
+        shuffle(lshuff)
+        for x in lshuff:
+            srchndx = self.bsp.binsearch(self.l, x)
+            listndx = self.l.index(x)
+            self.assertTrue(srchndx == listndx)
 
          
+if __name__ == "__main__":
+    unittest.main()
