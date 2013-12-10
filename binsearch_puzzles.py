@@ -110,14 +110,25 @@ class TestBinSearchPuzzles(unittest.TestCase):
                 self.assertFalse(math.ceil(math.sqrt(x)) == math.sqrt(x))
     
     def test_array_reverse(self):
-        l = range(21) 
+        l = range(21) #Odd-sized array
+        shuffle(l)
+        l_native_reversed = l[:]
+        arrayPuzzles.array_reverse(l)
+        l_native_reversed.reverse()
+        self.assertTrue(l_native_reversed == l)
+
+        l.pop() #Even-sized array
         shuffle(l)
         l_native_reversed = l[:]
         arrayPuzzles.array_reverse(l)
         l_native_reversed.reverse()
         self.assertTrue(l_native_reversed == l)
         
-
+    def test_array_rotate_right(self):
+        l = range(10)
+        print l
+        arrayPuzzles.array_rotate_right(l, 97)
+        print l
          
 if __name__ == "__main__":
     unittest.main()
