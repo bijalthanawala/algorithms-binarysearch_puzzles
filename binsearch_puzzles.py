@@ -1,6 +1,7 @@
 #! /usr/bin/python
 
 from random import randint, shuffle
+import math 
 import unittest
 
 class binSearchPuzzles:
@@ -9,19 +10,47 @@ class binSearchPuzzles:
         pass
 
     def binsearch(self, arr, x):
+        # Find x in the list/array arr and return it's index in arr
+        # If x not in arr, return -1
         start = 0
         end = len(arr)-1
         
         while start <= end:
             mid = (start + end) / 2
             if arr[mid] == x:
+                #print "x=%d found at %d. arr[%d]=%d" % (x, mid, mid, arr[mid])
                 return mid
             if x > arr[mid]:
                 start = mid + 1
             else: 
                 end = mid - 1
 
+        #print "start=%d, end=%d. x=%d not found" % (start, end, x)
+        return (-1)
+
+    def sqrt_binsearch(self, x):
+        # Return Square root of x 
+        # If x is a negative (invalid), return -1
+        # If x is not a perfect square, return -1 (todo: fix this)
+        if not x:
+            return x
+        if x < 0:
+            return -1
+        start = 1 #1.0
+        end = x
+        while start <= end:
+            mid = (start + end) / 2
+            sqr = mid * mid
+            if sqr == x:
+                #print "sqrt(%d) = %d" % (x, mid)
+                return mid
+            if sqr < x:
+                start = mid + 1
+            else:
+                end = mid -1
+        #print "sqrt(%d) = %d" % (x, -1)
         return -1
+            
         
 class TestBinSearchPuzzles(unittest.TestCase):
 
@@ -60,7 +89,24 @@ class TestBinSearchPuzzles(unittest.TestCase):
             srchndx = self.bsp.binsearch(self.l, x)
             listndx = self.l.index(x)
             self.assertTrue(srchndx == listndx)
+        # Now to try to find a number that is not present in the array
+        unfound = max(self.l)+1
+        srchndx = self.bsp.binsearch(self.l , unfound)
+        self.assertTrue(srchndx == -1)
+        # Now try to find in an array of length 1
+        srchndx = self.bsp.binsearch([5], 5)
+        self.assertTrue(srchndx == 0)
+
+    def test_binsearch_sqrt(self):
+       for x in range(50):
+            sqrt = self.bsp.sqrt_binsearch(x) 
+            if sqrt != -1:
+                self.assertTrue(x == (sqrt * sqrt))
+            else:
+                #Confirm if we claim x to be not a perfect square, that that is so.
+                self.assertFalse(math.ceil(math.sqrt(x)) == math.sqrt(x))
 
          
 if __name__ == "__main__":
     unittest.main()
+    
