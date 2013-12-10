@@ -125,10 +125,20 @@ class TestBinSearchPuzzles(unittest.TestCase):
         self.assertTrue(l_native_reversed == l)
         
     def test_array_rotate_right(self):
+        arraylen = 10
+        for r in range(arraylen):
+            l = range(arraylen)
+            l_expected = l[r:] + l[0:r] 
+            # The first and the last iteration, 0 and arraylen,
+            # do not produce any rotation really
+            arrayPuzzles.array_rotate_right(l, r)
+            self.assertTrue(l == l_expected)
+        # Testing rotating 9 times the size of array
         l = range(10)
-        print l
-        arrayPuzzles.array_rotate_right(l, 97)
-        print l
+        r = 9 * len(l)
+        l_expected = l[:]
+        arrayPuzzles.array_rotate_right(l, r)
+        self.assertTrue(l == l_expected)
          
 if __name__ == "__main__":
     unittest.main()

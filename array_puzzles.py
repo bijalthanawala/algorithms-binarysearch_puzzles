@@ -19,7 +19,7 @@ class arrayPuzzles:
     def array_rotate_right(arr, n):
         # Rotate an array right (anticlock) by n elements 
         if ( n % (len(arr)) == 0) :
-            print "Rotation size (%d) is mod of len of array (%d)" % n, len(arr)
+            #print "Nothing to do. Requested rotation (%d) is mod of len of array (%d)" % (n, len(arr))
             return
         n = n % len(arr)
         arrayPuzzles.array_reverse(arr, 0, n-1)
