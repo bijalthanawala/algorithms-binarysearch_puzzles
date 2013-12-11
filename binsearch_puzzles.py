@@ -9,12 +9,15 @@ from array_puzzles import arrayPuzzles
 
 class binSearchPuzzles:
 
-    def __init__(self, init_arr):
+    def __init__(self):
         pass
 
+
     def binsearch(self, arr, x):
-        # Find x in the list/array arr and return it's index in arr
-        # If x not in arr, return -1
+        """
+        Find element x in the list/array arr and return it's index in arr
+        If x not in arr, return -1
+        """
         start = 0
         end = len(arr)-1
         
@@ -31,10 +34,14 @@ class binSearchPuzzles:
         #print "start=%d, end=%d. x=%d not found" % (start, end, x)
         return (-1)
 
+
+
     def sqrt_binsearch(self, x):
-        # Return Square root of x 
-        # If x is a negative (invalid), return -1
-        # If x is not a perfect square, return -1 (todo: fix this)
+        """
+        Return Square root of x 
+        If x is a negative (invalid), return -1
+        If x is not a perfect square, return -1 (todo: fix this)
+        """
         if not x:
             return x
         if x < 0:
@@ -53,13 +60,97 @@ class binSearchPuzzles:
                 end = mid -1
         #print "sqrt(%d) = %d" % (x, -1)
         return -1
+
+
+
+    def find_tipping_point_linear(self, a, debug=False):
+        """
+        a is a rotated array  
+        (Left-rotated or right-rotated ? Does not matter while solving this problem)
+        The task of this routine is to return the tipping/pivot/transition 
+        point of array a by searching linearly (in O(n) time complexity) 
+        In simpler words, find the index of the largest integer in array a in 
+        O(n) time complexity.
+        """ 
+        if(len(a) == 0): 
+            return -1
+    
+        if(len(a) == 1):
+            return 0
+    
+        for i in range(1, len(a)):
+            if a[i-1] > a[i]:
+                return (i-1)
+
+        return i 
+
+
+
+    def find_tipping_point_binsrch(self, a, debug=False):
+        """
+        a is a rotated array 
+        (Left-rotated or right-rotated ? Does not matter while solving this problem)
+        The task of this routine is to return the tipping/pivot/transition 
+        point of array a in O(log n) time complexity. 
+        In simpler words, find the index of the largest integer in array a
+        in O(log n) time complexity.
+        """
+        start = 0
+        end = len(a)-1
+        # Remmeber the length of this array, we need it later twice
+        arrlen = end-start+1
+
+        if debug:
+            print a
+        
+        while start <= end:
+            # If this segment is already a sorted one,
+            # the last index has the largest value
+            if a[start] <= a[end]:
+                return end
+
+
+            # Find the mid-point
+            mid = (start + end) / 2
+
+            # Learned this neat trick here:
+            # Video: How many times is a sorted array rotated?
+            # Posted by user: mycodeschool
+            # URL: http://www.youtube.com/watch?v=4qjprDkJrjY
+            post_mid = (mid+1) % arrlen
+            pre_mid = (mid-1+arrlen) % arrlen
+    
+            #if post_mid != (mid+1):
+            #    print "post_mid adjusted to %d (err val = %d) len(a)=%d" % (post_mid, mid+1, len(a)),
+            #if pre_mid != (mid-1):
+            #    print "pre_mid adjusted to %d (err val = %d len(a)=%d)" % (pre_mid, mid-1, len(a)),
+            
+            if debug:
+                print start, mid, end
+            # Check if mid is the transition point
+            if ((a[pre_mid] < a[mid]) and (a[post_mid] < a[mid])):
+                return mid
+            # Check if left half is not sorted, pivot is within there
+            if a[start] > a[mid]:
+                end = mid - 1;
+            elif a[mid] > a[end]:
+                start = mid + 1;
+            else:
+                return -1
+            if debug:
+                print start, mid, end
+                print '-----'
+        
+        return -1
+                
+                
             
         
 class TestBinSearchPuzzles(unittest.TestCase):
 
     def setUp(self):    
         self.l = self.genRandomList(arrlen=5000, minval=0, maxval=10000, bUnique=True, bSorted=True)
-        self.bsp = binSearchPuzzles(self.l)
+        self.bsp = binSearchPuzzles()
         
     def genRandomList(self, arrlen=10, minval=0, maxval=10, bUnique=True, bSorted=False):
             if bUnique: 
@@ -109,6 +200,7 @@ class TestBinSearchPuzzles(unittest.TestCase):
                 #Confirm if we claim x to be not a perfect square, that that is so.
                 self.assertFalse(math.ceil(math.sqrt(x)) == math.sqrt(x))
     
+
     def test_array_reverse(self):
         l = range(21) #Odd-sized array
         shuffle(l)
@@ -124,22 +216,52 @@ class TestBinSearchPuzzles(unittest.TestCase):
         l_native_reversed.reverse()
         self.assertTrue(l_native_reversed == l)
         
+
     def test_array_rotate_right(self):
+        start = randint(0,1000) # Let the smallest number be a random number
         arraylen = 10
+        stop = start + arraylen + 1
         for r in range(arraylen):
-            l = range(arraylen)
+            l = range(start, stop)
             l_expected = l[r:] + l[0:r] 
             # The first and the last iteration, 0 and arraylen,
             # do not produce any rotation really
             arrayPuzzles.array_rotate_right(l, r)
             self.assertTrue(l == l_expected)
         # Testing rotating 9 times the size of array
-        l = range(10)
+        l = range(start, stop)
         r = 9 * len(l)
         l_expected = l[:]
         arrayPuzzles.array_rotate_right(l, r)
         self.assertTrue(l == l_expected)
-         
+
+
+    def test_find_tipping_point(self):
+        lengths = [ 1000+10, 3, 2, 1]  # Test with arrays of different sizes. 
+                                       # Smaller sizes (3, 2, 1) are good to reveal
+                                       # corner-cases
+        dbgflg = False
+        for length in lengths:
+            for r in range(length):
+                l = range(r,length)+range(0,r) # Generate rotated arrays
+                tippt_bin = self.bsp.find_tipping_point_binsrch(l, debug=dbgflg)
+                tippt_linear = self.bsp.find_tipping_point_linear(l, debug=dbgflg)
+                #print l, 
+                #print "a[%d] = %d" % (tippt, l[tippt])
+                self.assertTrue(l[tippt_bin] == max(l))
+                self.assertTrue(tippt_bin == (len(l)-1)-(r%len(l)))
+                self.assertTrue(tippt_bin == tippt_linear)
+
+        l = []
+        tippt = self.bsp.find_tipping_point_binsrch(l)
+        self.assertTrue(tippt == -1)
+        #print l,
+        #print "tippt = %d" % (tippt)
+
+
+    
+
+
 if __name__ == "__main__":
     unittest.main()
     
