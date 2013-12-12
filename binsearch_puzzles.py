@@ -60,8 +60,8 @@ class binSearchPuzzles:
             # Find the mid point
             mid = (start + end) / 2
 
-            # By some good chance midpoint contains the element 
-            # we are looking for then that's that
+            # Does the midpoint contain the element 
+            # we are looking for ?
             if arr[mid] == x:
                 return mid
         
@@ -83,6 +83,8 @@ class binSearchPuzzles:
                 else:
                     # If element is not within sorted right-half, discard it
                     end = mid - 1   
+
+        return -1
 
 
     def sqrt_binsearch(self, x):
@@ -235,7 +237,7 @@ class TestBinSearchPuzzles(unittest.TestCase):
         srchndx = self.bsp.binsearch([5], 5)
         self.assertTrue(srchndx == 0)
 
-    def test_binarysearch_rotated(self):
+    def _OLD_test_binarysearch_rotated(self):
         l = range(727,10001)+range(0,727) # Generate rotated arrays
         lshuff = l[:]
         shuffle(lshuff) #Search elements in an un-orderly fashion
@@ -251,6 +253,27 @@ class TestBinSearchPuzzles(unittest.TestCase):
         # Now try to find in an array of length 1
         srchndx = self.bsp.binsearch_rotated([5], 5)
         self.assertTrue(srchndx == 0)
+
+    def test_binarysearch_rotated(self):
+        lengths = [ 1000, 3, 2, 1]  # Test with arrays of different sizes. 
+                                       # Smaller sizes (3, 2, 1) are good to reveal
+                                       # corner-cases
+        for length in lengths:
+            for r in range(length):
+                l = range(r,length)+range(0,r) # Generate a rotated array 
+                                               # of size length rotated by r elements
+                lshuff = l[:]
+                shuffle(lshuff) #Search elements in an un-orderly fashion
+                for x in lshuff:
+                    srchndx = self.bsp.binsearch_rotated(l, x)
+                    listndx = l.index(x)
+                    #print x, srchndx, listndx
+                    self.assertTrue(srchndx == listndx)
+                    # Now to try to find a number that is not present in the array
+                unfound = max(l)+1
+                srchndx = self.bsp.binsearch_rotated(l , unfound)
+                #print len(l), r, unfound, srchndx
+                self.assertTrue(srchndx == -1)
 
     def test_binsearch_sqrt(self):
        for x in range(50):
@@ -304,11 +327,12 @@ class TestBinSearchPuzzles(unittest.TestCase):
         dbgflg = False
         for length in lengths:
             for r in range(length):
-                l = range(r,length)+range(0,r) # Generate rotated arrays
+                l = range(r,length)+range(0,r) # Generate a rotated array 
+                                               # of size length rotated by r elements
                 tippt_bin = self.bsp.find_tipping_point_binsrch(l, debug=dbgflg)
                 tippt_linear = self.bsp.find_tipping_point_linear(l, debug=dbgflg)
                 #print l, 
-                #print "a[%d] = %d" % (tippt, l[tippt])
+                #print "a[%d] = %d" % (tippt_bin, l[tippt_bin])
                 self.assertTrue(l[tippt_bin] == max(l))
                 self.assertTrue(tippt_bin == (len(l)-1)-(r%len(l)))
                 self.assertTrue(tippt_bin == tippt_linear)
