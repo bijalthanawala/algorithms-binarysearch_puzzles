@@ -13,13 +13,18 @@ class binSearchPuzzles:
         pass
 
 
-    def binsearch(self, arr, x):
+    def binsearch(self, arr, x, start=-1, end=-1):
         """
-        Find element x in the list/array arr and return it's index in arr
-        If x not in arr, return -1
+        arr :   A sorted array/list
+        x   :   The element to find
+        Task:   Perform binary search for element x in arr
+        Returns:    Index of x in arr
+                    If x not in arr, returns -1
         """
-        start = 0
-        end = len(arr)-1
+
+        if (start==-1) and (end==-1):
+            start = 0
+            end = len(arr)-1
         
         while start <= end:
             mid = (start + end) / 2
@@ -34,6 +39,50 @@ class binSearchPuzzles:
         #print "start=%d, end=%d. x=%d not found" % (start, end, x)
         return (-1)
 
+
+    def binsearch_rotated(self, arr, x):
+        """
+        arr :   A sorted and rotated array/list
+        x   :   The element to find
+        Task:   Perform binary search for element x in arr
+        Returns:    Index of x in arr
+                    If x not in arr, returns -1
+        """
+        start = 0
+        end = len(arr)-1
+
+        while start <= end:
+            # If this segment is sorted, perform
+            # regular binary search
+            if arr[start] <= arr[end]: 
+                return self.binsearch(arr, x, start, end)
+
+            # Find the mid point
+            mid = (start + end) / 2
+
+            # By some good chance midpoint contains the element 
+            # we are looking for then that's that
+            if arr[mid] == x:
+                return mid
+        
+            # Check if left section is sorted
+            if arr[start] <= arr[mid-1]:
+                # If it is sorted, check if x lies in-between
+                if (x >= arr[start]) and (x <= arr[mid-1]):
+                    # If so, perform binary search on it
+                    return self.binsearch(arr, x, start, mid-1) 
+                else:
+                    # If element is not within sorted left-half, discard it
+                    start = mid + 1   
+            # Check if right section is sorted
+            elif arr[mid+1] <= arr[end]:
+                # If it is sorted, check if x lies in-between
+                if (x >= arr[mid+1]) and (x <= arr[end]):
+                    # If so, perform binary search on it
+                    return self.binsearch(arr, x, mid+1, end) 
+                else:
+                    # If element is not within sorted right-half, discard it
+                    end = mid - 1   
 
 
     def sqrt_binsearch(self, x):
@@ -142,10 +191,7 @@ class binSearchPuzzles:
                 print '-----'
         
         return -1
-                
-                
-            
-        
+
 class TestBinSearchPuzzles(unittest.TestCase):
 
     def setUp(self):    
@@ -175,10 +221,8 @@ class TestBinSearchPuzzles(unittest.TestCase):
             return l 
 
     def test_binarysearch(self):
-        #Generate a shuffled list of all elements in the list to be searched
-        #We want to search each element in a not orderly fashion
         lshuff = self.l[:]
-        shuffle(lshuff)
+        shuffle(lshuff) #Search elements in an un-orderly fashion
         for x in lshuff:
             srchndx = self.bsp.binsearch(self.l, x)
             listndx = self.l.index(x)
@@ -189,6 +233,23 @@ class TestBinSearchPuzzles(unittest.TestCase):
         self.assertTrue(srchndx == -1)
         # Now try to find in an array of length 1
         srchndx = self.bsp.binsearch([5], 5)
+        self.assertTrue(srchndx == 0)
+
+    def test_binarysearch_rotated(self):
+        l = range(727,10001)+range(0,727) # Generate rotated arrays
+        lshuff = l[:]
+        shuffle(lshuff) #Search elements in an un-orderly fashion
+        for x in lshuff:
+            srchndx = self.bsp.binsearch_rotated(l, x)
+            listndx = l.index(x)
+            #print x, srchndx, listndx
+            self.assertTrue(srchndx == listndx)
+        # Now to try to find a number that is not present in the array
+        unfound = max(l)+1
+        srchndx = self.bsp.binsearch_rotated(l , unfound)
+        self.assertTrue(srchndx == -1)
+        # Now try to find in an array of length 1
+        srchndx = self.bsp.binsearch_rotated([5], 5)
         self.assertTrue(srchndx == 0)
 
     def test_binsearch_sqrt(self):
