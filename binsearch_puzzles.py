@@ -197,7 +197,6 @@ class binSearchPuzzles:
 class TestBinSearchPuzzles(unittest.TestCase):
 
     def setUp(self):    
-        self.l = self.genRandomList(arrlen=5000, minval=0, maxval=10000, bUnique=True, bSorted=True)
         self.bsp = binSearchPuzzles()
         
     def genRandomList(self, arrlen=10, minval=0, maxval=10, bUnique=True, bSorted=False):
@@ -223,35 +222,19 @@ class TestBinSearchPuzzles(unittest.TestCase):
             return l 
 
     def test_binarysearch(self):
-        lshuff = self.l[:]
-        shuffle(lshuff) #Search elements in an un-orderly fashion
-        for x in lshuff:
-            srchndx = self.bsp.binsearch(self.l, x)
-            listndx = self.l.index(x)
-            self.assertTrue(srchndx == listndx)
-        # Now to try to find a number that is not present in the array
-        unfound = max(self.l)+1
-        srchndx = self.bsp.binsearch(self.l , unfound)
-        self.assertTrue(srchndx == -1)
-        # Now try to find in an array of length 1
-        srchndx = self.bsp.binsearch([5], 5)
-        self.assertTrue(srchndx == 0)
-
-    def _OLD_test_binarysearch_rotated(self):
-        l = range(727,10001)+range(0,727) # Generate rotated arrays
+        l = self.genRandomList(arrlen=5000, minval=0, maxval=10000, bUnique=True, bSorted=True)
         lshuff = l[:]
         shuffle(lshuff) #Search elements in an un-orderly fashion
         for x in lshuff:
-            srchndx = self.bsp.binsearch_rotated(l, x)
+            srchndx = self.bsp.binsearch(l, x)
             listndx = l.index(x)
-            #print x, srchndx, listndx
             self.assertTrue(srchndx == listndx)
         # Now to try to find a number that is not present in the array
         unfound = max(l)+1
-        srchndx = self.bsp.binsearch_rotated(l , unfound)
+        srchndx = self.bsp.binsearch(l , unfound)
         self.assertTrue(srchndx == -1)
         # Now try to find in an array of length 1
-        srchndx = self.bsp.binsearch_rotated([5], 5)
+        srchndx = self.bsp.binsearch([5], 5)
         self.assertTrue(srchndx == 0)
 
     def test_binarysearch_rotated(self):
